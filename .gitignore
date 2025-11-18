@@ -1,0 +1,11 @@
+# 임시 폴더
+uploads/
+outputs/
+
+# 파이썬 캐시 파일
+__pycache__/
+*.pyc
+
+# OS 특정 파일
+.DS_Store
+Thumbs.db
