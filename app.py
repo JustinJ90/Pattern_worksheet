@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Pattern Worksheet Generator - Final Layout Version
-- Embedded Database (No upload required)
-- Original Layout restored
-- Footer (GRADE/REMARK) restored
-- 'PATTERN' label removed in Speaking I
-- Unscramble spacing increased to fill A4
+Pattern Worksheet Generator - Final Layout Adjusted
+- A4 Size specified
+- Unscramble: Added space for writing (between text and line)
+- Unscramble: Optimized item spacing to fit footer on single page
+- Footer included
 """
 
 from flask import Flask, render_template, request, send_file, jsonify
 import openpyxl
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch, mm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
@@ -101,94 +100,97 @@ def distribute_questions(selected_patterns, target_count=5):
             
     return result
 
-# --- PDF 생성 (레이아웃 수정됨) ---
+# --- PDF 생성 (간격 미세 조정) ---
 def create_worksheet(pattern_data, selected_patterns, output_path):
-    # 여백 설정 (원본과 동일하게 조정)
+    # A4 용지 사용 (Letter보다 세로가 조금 더 김)
     doc = SimpleDocTemplate(
         output_path,
-        pagesize=letter,
-        topMargin=0.4*inch,
-        bottomMargin=0.4*inch,
-        leftMargin=0.5*inch,
-        rightMargin=0.5*inch
+        pagesize=A4,
+        topMargin=15*mm,    # 위쪽 여백 약간 축소
+        bottomMargin=15*mm, # 아래쪽 여백 약간 축소
+        leftMargin=15*mm,
+        rightMargin=15*mm
     )
     
     story = []
     
-    # 1. Header Info
+    # Info
     p_nums = ", ".join([str(p['pattern_num']) for p in selected_patterns])
     unit_name = selected_patterns[0]['unit'] if selected_patterns else "Level A"
     
     # Styles
     title_style = ParagraphStyle('Title', fontSize=12, fontName='Helvetica-Bold', alignment=TA_CENTER, spaceBefore=0, spaceAfter=5)
     section_style = ParagraphStyle('Section', fontSize=10, fontName='Helvetica-Bold', spaceBefore=0, spaceAfter=0)
-    item_style = ParagraphStyle('Item', fontSize=9, fontName='Helvetica', leftIndent=0, spaceBefore=3, spaceAfter=3)
-    item_kr_style = ParagraphStyle('ItemKr', fontSize=9, fontName=KOREAN_FONT, leftIndent=0, spaceBefore=3, spaceAfter=3)
+    item_style = ParagraphStyle('Item', fontSize=9, fontName='Helvetica', leftIndent=0, spaceBefore=2, spaceAfter=2)
+    item_kr_style = ParagraphStyle('ItemKr', fontSize=9, fontName=KOREAN_FONT, leftIndent=0, spaceBefore=2, spaceAfter=2)
+    line_style = ParagraphStyle('Line', fontSize=9, fontName='Helvetica', spaceAfter=0)
     
-    # Title
+    # 1. Header
     story.append(Paragraph("<b>Weekly Test</b>", title_style))
     story.append(Paragraph(f"<b>Pattern {unit_name} - Patterns: {p_nums}</b>", title_style))
     
-    # Name/Date Table
+    # Name/Date
     name_date_data = [[
         Paragraph("NAME: _______________________________", ParagraphStyle('Name', fontSize=12, fontName='Helvetica')),
         Paragraph("DATE: _____ / _____", ParagraphStyle('Date', fontSize=12, fontName='Helvetica', alignment=TA_RIGHT))
     ]]
-    name_date_table = Table(name_date_data, colWidths=[5*inch, 2*inch])
+    name_date_table = Table(name_date_data, colWidths=[120*mm, 50*mm])
     name_date_table.setStyle(TableStyle([
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('ALIGN', (0, 0), (0, 0), 'LEFT'),
         ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
     ]))
     story.append(name_date_table)
-    story.append(Spacer(1, 0.2*inch))
+    story.append(Spacer(1, 5*mm))
     
     # 2. Speaking I
     story.append(Paragraph("<b>◈ Speaking I - Answer the questions</b>", section_style))
-    story.append(Spacer(1, 0.05*inch))
-    
-    # [삭제됨] PATTERN 라벨 제거
-    # story.append(Paragraph("<b>PATTERN</b>", ParagraphStyle('sub', fontSize=9, fontName='Helvetica-Bold')))
+    story.append(Spacer(1, 2*mm))
     
     for idx, question in enumerate(pattern_data['speaking1'][:5], 1):
         story.append(Paragraph(f"{idx}. {question}", item_style))
     
-    story.append(Spacer(1, 0.2*inch))
+    story.append(Spacer(1, 6*mm))
     
     # 3. Speaking II
     story.append(Paragraph("<b>◈ Speaking II - Say in English</b>", section_style))
-    story.append(Spacer(1, 0.05*inch))
+    story.append(Spacer(1, 2*mm))
     
     for idx, korean in enumerate(pattern_data['speaking2'][:5], 1):
         story.append(Paragraph(f"{idx}. {korean}", item_kr_style))
     
-    story.append(Spacer(1, 0.2*inch))
+    story.append(Spacer(1, 6*mm))
     
     # 4. Speaking III
     story.append(Paragraph("<b>◈ Speaking III - With your teacher</b>", section_style))
-    story.append(Spacer(1, 0.05*inch))
+    story.append(Spacer(1, 2*mm))
     
     for idx in range(1, 6):
         story.append(Paragraph(f"{idx}. Pattern {idx}", item_style))
     
-    story.append(Spacer(1, 0.2*inch))
+    story.append(Spacer(1, 6*mm))
     
-    # 5. Unscramble
+    # 5. Unscramble (핵심 수정 부분)
     story.append(Paragraph("<b>◈ Unscramble</b>", section_style))
-    story.append(Spacer(1, 0.1*inch))
+    story.append(Spacer(1, 3*mm))
     
     for idx, (korean, words) in enumerate(pattern_data['unscramble'][:5], 1):
-        # 문제
+        # 문제 텍스트
         story.append(Paragraph(f"{idx}. {korean} ({words})", item_kr_style))
-        # 밑줄 (답 적는 곳)
-        story.append(Paragraph("_" * 85, ParagraphStyle('Line', fontSize=9, fontName='Helvetica', spaceAfter=0)))
         
-        # [수정됨] 간격을 0.55 inch로 늘려서 페이지를 채움 (기존 0.35)
-        story.append(Spacer(1, 0.55*inch)) 
+        # [수정 1] 글씨 쓸 공간 확보 (문제와 밑줄 사이의 간격 추가)
+        story.append(Spacer(1, 8*mm)) 
+        
+        # 밑줄
+        story.append(Paragraph("_" * 85, line_style))
+        
+        # [수정 2] 다음 문제와의 간격 (너무 넓으면 페이지 넘어가므로 적절히 조절)
+        story.append(Spacer(1, 5*mm))
     
-    # 6. Footer (GRADE / REMARK) - 복구됨
-    # Unscramble 루프가 끝난 후 약간의 간격이 있을 수 있으므로 Spacer 추가
-    story.append(Spacer(1, 0.1*inch))
+    # 6. Footer (GRADE / REMARK)
+    # 남은 공간을 계산하기 어려우므로 Spacer를 사용하여 아래쪽으로 밀어줍니다.
+    # A4 페이지 내에 들어오도록 적당한 간격 추가
+    story.append(Spacer(1, 5*mm))
 
     footer_data = [[
         Paragraph("<b>GRADE:</b>", ParagraphStyle('Footer', fontSize=12, fontName='Helvetica-Bold')),
@@ -196,7 +198,7 @@ def create_worksheet(pattern_data, selected_patterns, output_path):
         Paragraph("<b>REMARK:</b>", ParagraphStyle('Footer', fontSize=12, fontName='Helvetica-Bold'))
     ]]
     
-    footer_table = Table(footer_data, colWidths=[1.5*inch, 1.5*inch, 4*inch])
+    footer_table = Table(footer_data, colWidths=[40*mm, 40*mm, 90*mm])
     footer_table.setStyle(TableStyle([
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('ALIGN', (0, 0), (0, 0), 'LEFT'),
