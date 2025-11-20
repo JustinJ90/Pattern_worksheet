@@ -7,10 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --yoon-red: #D6001C;       /* 윤선생 메인 레드 */
+            --yoon-red: #D6001C;
             --yoon-black: #222222;
             --yoon-gray: #F4F4F4;
-            --footer-bg: #1a1a1a;      /* 푸터 검정색 */
+            --footer-bg: #1a1a1a;
         }
 
         body {
@@ -38,10 +38,10 @@
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             padding: 40px;
-            border-top: 6px solid var(--yoon-red); /* 상단 빨간 포인트 */
+            border-top: 6px solid var(--yoon-red);
         }
 
-        /* 헤더 스타일 (텍스트 로고) */
+        /* 헤더 스타일 */
         .header {
             text-align: center;
             margin-bottom: 40px;
@@ -62,7 +62,7 @@
 
         /* 교재 선택 섹션 */
         .book-section {
-            background-color: #FFF5F5; /* 연한 핑크 배경 */
+            background-color: #FFF5F5;
             border-radius: 10px;
             padding: 25px;
             text-align: center;
@@ -102,7 +102,6 @@
             padding: 5px;
         }
 
-        /* 스크롤바 스타일 */
         .pattern-list::-webkit-scrollbar { width: 8px; }
         .pattern-list::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
 
@@ -189,37 +188,19 @@
             box-shadow: none;
         }
 
-        /* 푸터 (요청하신 검정색 스타일) */
+        /* 푸터 수정됨: 심플한 한 줄 */
         .footer {
             background-color: var(--footer-bg);
-            color: #999;
-            padding: 40px 20px;
+            color: #888;
+            padding: 20px; /* 높이 축소 */
             text-align: center;
             font-size: 0.8rem;
-            margin-top: auto; /* 하단 고정 */
+            margin-top: auto;
         }
-        .footer-logo {
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            display: inline-block;
+        .footer-copy {
+            font-family: 'Arial', sans-serif; /* 영문 폰트 깔끔하게 */
+            letter-spacing: 0.5px;
         }
-        .footer-links {
-            margin-bottom: 20px;
-        }
-        .footer-links a {
-            color: #ccc;
-            text-decoration: none;
-            margin: 0 10px;
-        }
-        .footer-links a:hover { text-decoration: underline; color: white; }
-        .footer-info span {
-            display: inline-block;
-            margin: 0 5px;
-        }
-        .footer-info { line-height: 1.6; }
-        .footer-copy { margin-top: 20px; color: #666; }
 
     </style>
 </head>
@@ -228,7 +209,7 @@
     <div class="main-wrapper">
         <div class="card">
             <div class="header">
-                <h1 class="brand-title">Yoon's Weekly Pattern Test</h1>
+                <h1 class="brand-title">Yoon's Weekly Pattern UP!</h1>
                 <div class="brand-subtitle">워크시트 자동 생성기</div>
             </div>
 
@@ -238,7 +219,7 @@
                     <option value="" disabled selected>목록에서 교재 선택</option>
                     {% if books %}
                         {% for book in books %}
-                        <option value="{{ book }}">{{ book }}</option>
+                        <option value="{{ book }}">{{ book.replace('.xlsx', '') }}</option>
                         {% endfor %}
                     {% else %}
                         <option value="" disabled>등록된 교재가 없습니다 (databases 폴더 확인)</option>
@@ -268,15 +249,6 @@
     </div>
 
     <footer class="footer">
-        <div class="footer-links">
-            <a href="#">이용약관</a>
-            <a href="#">개인정보처리방침</a>
-            <a href="#">고객센터</a>
-        </div>
-        <div class="footer-info">
-            <span>(주)윤선생</span> <span>|</span> <span>대표이사: 윤성</span><br>
-            <span>서울시 강동구 강동대로 166 (성내동)</span> <span>|</span> <span>사업자등록번호: 212-81-01862</span>
-        </div>
         <div class="footer-copy">
             Copyright © YOON ENGLISH SCHOOL. All Rights Reserved.
         </div>
@@ -318,7 +290,6 @@
                         div.className = 'pattern-item';
                         div.onclick = () => togglePattern(div, p.number);
                         
-                        // 체크박스 없이 깔끔한 디자인 (클릭 시 색상 변화로 구분)
                         div.innerHTML = `
                             <span class="pattern-badge">P.${p.number}</span>
                             <span class="pattern-text">${p.name}</span>
@@ -389,6 +360,7 @@
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
+                    // 파일명에서 확장자 제거하여 깔끔하게 저장
                     const shortBookName = currentBook.replace('.xlsx', '');
                     a.download = `Worksheet_${shortBookName}.pdf`;
                     document.body.appendChild(a);
