@@ -3,262 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Test Generator - 윤선생</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <title>YOON Weekly Test Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* 윤선생 브랜드 컬러 */
         :root {
-            --yoon-red: #E02B2E;
-            --yoon-dark-red: #B02224;
-            --yoon-gray-dark: #343a40;
-            --yoon-gray-medium: #6c757d;
-            --yoon-gray-light: #f8f9fa;
+            --yoon-red: #D6001C;       /* 윤선생 메인 레드 */
+            --yoon-black: #222222;
+            --yoon-gray: #F4F4F4;
+            --footer-bg: #1a1a1a;      /* 푸터 검정색 */
         }
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--yoon-gray);
             margin: 0;
             padding: 0;
-            background-color: var(--yoon-gray-light);
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* 푸터를 하단에 고정 */
+            min-height: 100vh;
         }
-        .main-content {
-            flex: 1; /* 메인 콘텐츠가 푸터를 아래로 밀도록 */
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 0 15px;
+
+        /* 메인 컨테이너 */
+        .main-wrapper {
+            flex: 1;
+            width: 100%;
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 20px;
             box-sizing: border-box;
         }
-        .container {
+
+        .card {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 40px;
+            border-top: 6px solid var(--yoon-red); /* 상단 빨간 포인트 */
         }
-        h1 {
+
+        /* 헤더 스타일 (텍스트 로고) */
+        .header {
             text-align: center;
+            margin-bottom: 40px;
+        }
+        .brand-title {
             color: var(--yoon-red);
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+        .brand-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* 교재 선택 섹션 */
+        .book-section {
+            background-color: #FFF5F5; /* 연한 핑크 배경 */
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
             margin-bottom: 30px;
-            font-size: 2.2em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        h1 img {
-            height: 40px; /* 로고 높이 조정 */
-            margin-right: 15px;
-            vertical-align: middle;
+            border: 1px solid #FFD1D1;
         }
         
-        /* 교재 선택 드롭다운 */
-        .book-selector {
-            margin-bottom: 25px;
-            padding: 20px;
-            background-color: #fcebeb; /* 연한 빨강 배경 */
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid var(--yoon-red);
+        .book-label {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--yoon-black);
+            margin-bottom: 10px;
+            display: block;
         }
-        .book-selector label {
-            font-weight: bold;
-            color: var(--yoon-dark-red);
-            font-size: 1.1em;
-            margin-right: 15px;
-        }
+
         select {
+            width: 100%;
+            max-width: 400px;
             padding: 12px 15px;
-            font-size: 1.05em;
-            border-radius: 6px;
+            font-size: 1rem;
             border: 2px solid var(--yoon-red);
-            width: calc(100% - 140px); /* 라벨 길이 고려 */
-            max-width: 350px;
-            background-color: white;
-            color: var(--yoon-gray-dark);
-            -webkit-appearance: none; /* 기본 드롭다운 화살표 제거 */
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E02B2E%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13%205.7L146.2%20202.7%2018.6%2075.1a17.6%2017.6%200%200%200-24.7%2024.9l130.4%20129.3c7.8%207.7%2020.4%207.7%2028.3%200L287%2094.3a17.6%2017.6%200%200%200%200-24.9z%22%2F%3E%3C%2Fsvg%3E');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 12px;
-            cursor: pointer;
-        }
-        select:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(224, 43, 46, 0.3);
-        }
-
-        #loadingMsg {
-            text-align: center;
-            display: none;
-            color: var(--yoon-gray-medium);
-            margin-bottom: 20px;
-            font-size: 1.1em;
-        }
-
-        /* 패턴 리스트 */
-        .pattern-list { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 15px; 
-            margin-bottom: 25px;
-            max-height: 550px; /* 스크롤 영역 */
-            overflow-y: auto;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            background-color: #fcfcfc;
+            outline: none;
+            background: white;
+            cursor: pointer;
+            font-family: inherit;
         }
-        .pattern-list > div:first-child { /* 초기 메시지 */
-            grid-column: 1 / -1;
-            text-align: center;
-            color: var(--yoon-gray-medium);
-            padding: 20px;
+
+        /* 패턴 리스트 영역 */
+        .pattern-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 5px;
         }
-        
+
+        /* 스크롤바 스타일 */
+        .pattern-list::-webkit-scrollbar { width: 8px; }
+        .pattern-list::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
+
         .pattern-item {
             background: white;
-            border: 1px solid #ddd;
-            padding: 18px;
+            border: 1px solid #eee;
+            padding: 15px;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .pattern-item:hover { 
-            border-color: var(--yoon-red); 
-            background: #fffafa; 
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .pattern-item.selected { 
-            background-color: #ffe6e6; /* 선택 시 배경색 */
-            border-color: var(--yoon-red); 
-            box-shadow: 0 0 8px rgba(224, 43, 46, 0.4); 
-        }
-        
-        .pattern-info { margin-left: 10px; flex-grow: 1;}
-        .pattern-num { 
-            font-weight: bold; 
-            color: var(--yoon-dark-red); 
-            margin-right: 8px; 
-            font-size: 1.1em;
-        }
-        .pattern-unit { 
-            font-size: 0.85em; 
-            color: white; 
-            background: var(--yoon-red); 
-            padding: 3px 8px; 
-            border-radius: 5px; 
-            font-weight: bold;
-        }
-        .pattern-name {
-            margin-top: 8px; 
-            font-size: 0.95em; 
-            color: var(--yoon-gray-dark);
-            line-height: 1.4;
-        }
-
-        /* 체크박스 스타일 */
-        .pattern-item input[type="checkbox"] {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
             position: relative;
-            outline: none;
-            margin-right: 10px;
-            flex-shrink: 0;
         }
-        .pattern-item input[type="checkbox"]:checked {
-            background-color: var(--yoon-red);
+
+        .pattern-item:hover {
             border-color: var(--yoon-red);
+            background-color: #FFF9F9;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
         }
-        .pattern-item input[type="checkbox"]:checked::after {
-            content: '✔';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+
+        .pattern-item.selected {
+            background-color: #FFEEEE;
+            border-color: var(--yoon-red);
+            box-shadow: 0 0 0 1px var(--yoon-red);
+        }
+
+        .pattern-badge {
+            background-color: var(--yoon-red);
             color: white;
-            font-size: 14px;
-            line-height: 1;
-        }
-
-        .selection-summary {
-            text-align: center; 
-            margin-bottom: 25px; 
-            color: var(--yoon-gray-dark); 
-            font-size: 1.1em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
             font-weight: bold;
+            margin-right: 8px;
         }
 
-        .action-btn {
-            display: block;
-            width: 100%;
-            padding: 18px;
+        .pattern-text {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 하단 버튼 영역 */
+        .bottom-area {
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .count-info {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        .count-num {
+            color: var(--yoon-red);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .generate-btn {
             background-color: var(--yoon-red);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background 0.2s ease-in-out;
+            padding: 16px 40px;
+            font-size: 1.1rem;
             font-weight: bold;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 10px rgba(224, 43, 46, 0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 15px rgba(214, 0, 28, 0.3);
+            width: 100%;
+            max-width: 300px;
         }
-        .action-btn:hover:enabled { background-color: var(--yoon-dark-red); }
-        .action-btn:disabled { 
-            background-color: #cccccc; 
-            cursor: not-allowed; 
+        .generate-btn:hover:not(:disabled) {
+            background-color: #b00017;
+            transform: translateY(-2px);
+        }
+        .generate-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
             box-shadow: none;
         }
 
-        /* 푸터 스타일 */
+        /* 푸터 (요청하신 검정색 스타일) */
         .footer {
-            background-color: #2c2c2c; /* 웹사이트 푸터 색상 참고 */
-            color: #ccc;
-            padding: 25px 20px;
+            background-color: var(--footer-bg);
+            color: #999;
+            padding: 40px 20px;
             text-align: center;
-            font-size: 0.85em;
-            margin-top: 40px; /* 메인 콘텐츠와의 간격 */
+            font-size: 0.8rem;
+            margin-top: auto; /* 하단 고정 */
         }
-        .footer p {
-            margin: 5px 0;
-            line-height: 1.6;
+        .footer-logo {
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: inline-block;
         }
-        .footer a {
-            color: #eee;
+        .footer-links {
+            margin-bottom: 20px;
+        }
+        .footer-links a {
+            color: #ccc;
             text-decoration: none;
+            margin: 0 10px;
         }
-        .footer a:hover {
-            text-decoration: underline;
+        .footer-links a:hover { text-decoration: underline; color: white; }
+        .footer-info span {
+            display: inline-block;
+            margin: 0 5px;
         }
+        .footer-info { line-height: 1.6; }
+        .footer-copy { margin-top: 20px; color: #666; }
 
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            h1 { font-size: 1.8em; }
-            h1 img { height: 30px; }
-            .book-selector label { display: block; margin-bottom: 10px; margin-right: 0;}
-            select { width: 100%; max-width: none; }
-            .pattern-list { grid-template-columns: 1fr; }
-            .pattern-item { padding: 15px; }
-            .action-btn { font-size: 1.1em; padding: 15px; }
-        }
     </style>
 </head>
 <body>
-    <div class="main-content">
-        <div class="container">
-            <h1>
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAABA CAMAAABp7+6fAAAAM1BMVEVHcEwbGxwYGBgSEhIYGxscGxwaGxwZGRkcGxwaGxwZGxwbGxwaGxwbGxwaGxwZGxwbGxxcxX9fAAAAEHRSTlMAxNjIyMDAwMDAwMDAwMBmC30+AAACxElEQVR4nO2byXKaMBCFp0G4s0vN/9C52JmHqBwQ9q2e9/2w0Mh2w4JpCgghhBBCCCGEEGp/52YQoX96v5f/2f3+tM/Xz06M/c7d3/l92v1+O5P/d7T7PdvN3vjFkR4d3f3fXq+Hh3mG+c/d3vjFkf/p90u6/Z5m/w+M3Rz8n1/H47S+f4z+z83NnE84xY/xHxy5f0/8n9n5vJ/t5/6/2/2c/T8yY/j/zMy5+n+F/2f38v/Z//+M2fz/i+c/M3Pj/w/jP/Pz184m/jPjPyNl+n/E/2fn/fN/s//nZubwHxw5yP+cOX/N/5+d+8/g/M/czmY+MeN/+N+y8z/j/0/O38v/D7r/zOcz/x/4f+fmbufxH+N/M/P5zNnP+M+MzGZm/z/w/9v+/+/W/4b+J2ezyYh/+GjM5DP/8B8yM//c/wMh+8/8A/2fn/k7c/gPjfzPyJ+f/w+zP/MTPvP/A/3Py1+V+1/3M+e/I/8fOzO//v/H/w/935n4z/x/939n4n/j/wf9/4P8f+j/z/w/9P/N/D/0/8//Y/zP/D/1//x/G/wP/z/D/D/s/8/8P+z/z/w/4f+L/D/i/5v9v/M/5/9v/M/5f+T/m/xP9X/Z/yf+b/P/z/2/8T/1/8T/1/4P+L/G/wf8n/Y/yf8n/Y/yf9n/Y/y/8n/Z/yf+b/Y/zP/X/Y/zf+X/Y/zf+X/b/zP+X/D/m/xv8n/B/z/5v9r/B/x/zX9r/B/zP+v/M/z/8z/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8n/D/m/zv8
+
+    <div class="main-wrapper">
+        <div class="card">
+            <div class="header">
+                <h1 class="brand-title">YOON Weekly Test</h1>
+                <div class="brand-subtitle">워크시트 자동 생성기</div>
+            </div>
+
+            <div class="book-section">
+                <label class="book-label">📚 교재를 선택해주세요</label>
+                <select id="bookSelect" onchange="loadPatterns()">
+                    <option value="" disabled selected>목록에서 교재 선택</option>
+                    {% if books %}
+                        {% for book in books %}
+                        <option value="{{ book }}">{{ book }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="" disabled>등록된 교재가 없습니다 (databases 폴더 확인)</option>
+                    {% endif %}
+                </select>
+            </div>
+
+            <div id="loadingMsg" style="text-align:center; display:none; color:#888; margin: 20px;">
+                패턴 데이터를 불러오는 중입니다...
+            </div>
+
+            <div class="pattern-list" id="patternList">
+                <div style="text-align:center; padding:40px; color:#999; grid-column: 1/-1;">
+                    위에서 교재를 선택하면 패턴 목록이 나타납니다.
+                </div>
+            </div>
+
+            <div class="bottom-area">
+                <div class="count-info">
+                    선택된 패턴: <span id="selectedCount" class="count-num">0</span> / 5
+                </div>
+                <button onclick="generatePDF()" class="generate-btn" id="genBtn" disabled>
+                    워크시트 생성하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#">이용약관</a>
+            <a href="#">개인정보처리방침</a>
+            <a href="#">고객센터</a>
+        </div>
+        <div class="footer-info">
+            <span>(주)윤선생</span> <span>|</span> <span>대표이사: 윤성</span><br>
+            <span>서울시 강동구 강동대로 166 (성내동)</span> <span>|</span> <span>사업자등록번호: 212-81-01862</span>
+        </div>
+        <div class="footer-copy">
+            Copyright © YOON ENGLISH SCHOOL. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script>
+        let selectedPatterns = new Set();
+        let currentBook = "";
+
+        async function loadPatterns() {
+            const bookSelect = document.getElementById('bookSelect');
+            const filename = bookSelect.value;
+            const listDiv = document.getElementById('patternList');
+            const loadingMsg = document.getElementById('loadingMsg');
+            
+            if (!filename) return;
+
+            currentBook = filename;
+            selectedPatterns.clear();
+            updateUI();
+            
+            listDiv.innerHTML = '';
+            loadingMsg.style.display = 'block';
+
+            try {
+                const res = await fetch(`/get_patterns/${filename}`);
+                const data = await res.json();
+                
+                loadingMsg.style.display = 'none';
+                
+                if (data.success) {
+                    if (data.patterns.length === 0) {
+                        listDiv.innerHTML = '<div style="text-align:center; padding:20px; grid-column:1/-1;">이 교재에는 패턴 데이터가 없습니다.</div>';
+                        return;
+                    }
+
+                    data.patterns.forEach(p => {
+                        const div = document.createElement('div');
+                        div.className = 'pattern-item';
+                        div.onclick = () => togglePattern(div, p.number);
+                        
+                        // 체크박스 없이 깔끔한 디자인 (클릭 시 색상 변화로 구분)
+                        div.innerHTML = `
+                            <span class="pattern-badge">P.${p.number}</span>
+                            <span class="pattern-text">${p.name}</span>
+                            <input type="checkbox" style="display:none;"> 
+                        `;
+                        listDiv.appendChild(div);
+                    });
+                } else {
+                    listDiv.innerHTML = `<div style="color:red; text-align:center;">오류 발생: ${data.error}</div>`;
+                }
+            } catch (e) {
+                loadingMsg.style.display = 'none';
+                listDiv.innerHTML = '<div style="color:red; text-align:center;">서버 통신 오류가 발생했습니다.</div>';
+            }
+        }
+
+        function togglePattern(element, num) {
+            const strNum = String(num);
+            const checkbox = element.querySelector('input');
+
+            if (selectedPatterns.has(strNum)) {
+                selectedPatterns.delete(strNum);
+                element.classList.remove('selected');
+                if(checkbox) checkbox.checked = false;
+            } else {
+                if (selectedPatterns.size >= 5) {
+                    alert('패턴은 최대 5개까지만 선택할 수 있습니다.');
+                    return;
+                }
+                selectedPatterns.add(strNum);
+                element.classList.add('selected');
+                if(checkbox) checkbox.checked = true;
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            const count = selectedPatterns.size;
+            document.getElementById('selectedCount').innerText = count;
+            const btn = document.getElementById('genBtn');
+            
+            if (count > 0) {
+                btn.disabled = false;
+                btn.innerText = "워크시트 생성하기";
+            } else {
+                btn.disabled = true;
+                btn.innerText = "패턴을 선택해주세요";
+            }
+        }
+
+        async function generatePDF() {
+            const btn = document.getElementById('genBtn');
+            btn.disabled = true;
+            btn.innerText = '생성 중... ⏳';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        book: currentBook,
+                        patterns: Array.from(selectedPatterns) 
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const shortBookName = currentBook.replace('.xlsx', '');
+                    a.download = `Worksheet_${shortBookName}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                    btn.innerText = '다운로드 완료! ✅';
+                } else {
+                    const err = await response.json();
+                    alert('오류: ' + err.error);
+                    btn.innerText = '워크시트 생성하기';
+                }
+            } catch (e) {
+                alert('서버 오류가 발생했습니다.');
+                btn.innerText = '워크시트 생성하기';
+            } finally {
+                setTimeout(() => {
+                    if(selectedPatterns.size > 0) {
+                        btn.disabled = false;
+                        btn.innerText = '워크시트 생성하기';
+                    }
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
