@@ -23,7 +23,6 @@
             min-height: 100vh;
         }
 
-        /* 메인 컨테이너 */
         .main-wrapper {
             flex: 1;
             width: 100%;
@@ -41,7 +40,6 @@
             border-top: 6px solid var(--yoon-red);
         }
 
-        /* 헤더 스타일 */
         .header {
             text-align: center;
             margin-bottom: 40px;
@@ -58,6 +56,40 @@
             font-size: 1.1rem;
             margin-top: 5px;
             font-weight: 500;
+        }
+
+        /* [새로 추가] 학생 정보 입력 섹션 */
+        .info-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .input-group {
+            flex: 1;
+            max-width: 200px;
+        }
+        .input-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--yoon-black);
+            margin-bottom: 5px;
+            display: block;
+            text-align: left;
+        }
+        .text-input {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border 0.2s;
+        }
+        .text-input:focus {
+            border-color: var(--yoon-red);
+            box-shadow: 0 0 0 2px rgba(214, 0, 28, 0.1);
         }
 
         /* 교재 선택 섹션 */
@@ -91,7 +123,6 @@
             font-family: inherit;
         }
 
-        /* 패턴 리스트 영역 */
         .pattern-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -101,7 +132,6 @@
             overflow-y: auto;
             padding: 5px;
         }
-
         .pattern-list::-webkit-scrollbar { width: 8px; }
         .pattern-list::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
 
@@ -116,20 +146,17 @@
             align-items: center;
             position: relative;
         }
-
         .pattern-item:hover {
             border-color: var(--yoon-red);
             background-color: #FFF9F9;
             transform: translateY(-2px);
             box-shadow: 0 3px 10px rgba(0,0,0,0.05);
         }
-
         .pattern-item.selected {
             background-color: #FFEEEE;
             border-color: var(--yoon-red);
             box-shadow: 0 0 0 1px var(--yoon-red);
         }
-
         .pattern-badge {
             background-color: var(--yoon-red);
             color: white;
@@ -139,20 +166,17 @@
             font-weight: bold;
             margin-right: 8px;
         }
-
         .pattern-text {
             font-size: 0.95rem;
             color: #333;
             font-weight: 500;
         }
 
-        /* 하단 버튼 영역 */
         .bottom-area {
             text-align: center;
             border-top: 1px solid #eee;
             padding-top: 20px;
         }
-
         .count-info {
             color: #666;
             margin-bottom: 15px;
@@ -188,20 +212,18 @@
             box-shadow: none;
         }
 
-        /* 푸터 수정됨: 심플한 한 줄 */
         .footer {
             background-color: var(--footer-bg);
             color: #888;
-            padding: 20px; /* 높이 축소 */
+            padding: 20px;
             text-align: center;
             font-size: 0.8rem;
             margin-top: auto;
         }
         .footer-copy {
-            font-family: 'Arial', sans-serif; /* 영문 폰트 깔끔하게 */
+            font-family: 'Arial', sans-serif;
             letter-spacing: 0.5px;
         }
-
     </style>
 </head>
 <body>
@@ -211,6 +233,17 @@
             <div class="header">
                 <h1 class="brand-title">Yoon's Weekly Pattern UP!</h1>
                 <div class="brand-subtitle">워크시트 자동 생성기</div>
+            </div>
+
+            <div class="info-section">
+                <div class="input-group">
+                    <label class="input-label">이름 (Name)</label>
+                    <input type="text" id="studentName" class="text-input" placeholder="이름을 입력하세요">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">학년 (Grade)</label>
+                    <input type="text" id="studentGrade" class="text-input" placeholder="학년 입력">
+                </div>
             </div>
 
             <div class="book-section">
@@ -242,7 +275,7 @@
                     선택된 패턴: <span id="selectedCount" class="count-num">0</span> / 5
                 </div>
                 <button onclick="generatePDF()" class="generate-btn" id="genBtn" disabled>
-                    워크시트 생성하기
+                    워크시트 생성 및 미리보기
                 </button>
             </div>
         </div>
@@ -333,7 +366,7 @@
             
             if (count > 0) {
                 btn.disabled = false;
-                btn.innerText = "워크시트 생성하기";
+                btn.innerText = "워크시트 생성 및 미리보기";
             } else {
                 btn.disabled = true;
                 btn.innerText = "패턴을 선택해주세요";
@@ -342,6 +375,10 @@
 
         async function generatePDF() {
             const btn = document.getElementById('genBtn');
+            // [새로 추가] 입력값 가져오기
+            const studentName = document.getElementById('studentName').value;
+            const studentGrade = document.getElementById('studentGrade').value;
+
             btn.disabled = true;
             btn.innerText = '생성 중... ⏳';
 
@@ -351,36 +388,34 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         book: currentBook,
-                        patterns: Array.from(selectedPatterns) 
+                        patterns: Array.from(selectedPatterns),
+                        // [새로 추가] 서버로 이름과 학년 전송
+                        name: studentName,
+                        grade: studentGrade
                     })
                 });
 
                 if (response.ok) {
                     const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    // 파일명에서 확장자 제거하여 깔끔하게 저장
-                    const shortBookName = currentBook.replace('.xlsx', '');
-                    a.download = `Worksheet_${shortBookName}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    a.remove();
-                    btn.innerText = '다운로드 완료! ✅';
+                    
+                    // [핵심 변경] 다운로드 대신 새 탭에서 열기 (미리보기)
+                    window.open(url, '_blank');
+                    
+                    btn.innerText = '생성 완료! (새 탭 확인) ✅';
                 } else {
                     const err = await response.json();
                     alert('오류: ' + err.error);
-                    btn.innerText = '워크시트 생성하기';
+                    btn.innerText = '워크시트 생성 및 미리보기';
                 }
             } catch (e) {
                 alert('서버 오류가 발생했습니다.');
-                btn.innerText = '워크시트 생성하기';
+                btn.innerText = '워크시트 생성 및 미리보기';
             } finally {
                 setTimeout(() => {
                     if(selectedPatterns.size > 0) {
                         btn.disabled = false;
-                        btn.innerText = '워크시트 생성하기';
+                        btn.innerText = '워크시트 생성 및 미리보기';
                     }
                 }, 2000);
             }
