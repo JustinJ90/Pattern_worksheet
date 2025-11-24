@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Pattern Worksheet Generator - Final Version
-- Inputs: Name & Grade (Optional)
-- Preview Mode: Opens in new tab instead of auto-download
-- Features: Random mixing, Teacher's Guide(Page 2), A4 Layout
+Pattern Worksheet Generator - Final Revision
+- Changed Input: Grade -> Date (text input)
+- PDF Header: Date field now accepts input
+- PDF Footer: Grade field reverted to blank (for teacher to write)
 """
 
 from flask import Flask, render_template, request, send_file, jsonify
@@ -105,8 +105,8 @@ def distribute_questions(selected_patterns, target_count=5):
             
     return result
 
-# --- PDF 생성 (이름/학년 파라미터 추가) ---
-def create_worksheet(pattern_data, selected_patterns, output_path, book_title, student_name="", student_grade=""):
+# --- PDF 생성 (이름/날짜 인자 변경) ---
+def create_worksheet(pattern_data, selected_patterns, output_path, book_title, student_name="", student_date=""):
     doc = SimpleDocTemplate(
         output_path,
         pagesize=A4,
@@ -133,13 +133,14 @@ def create_worksheet(pattern_data, selected_patterns, output_path, book_title, s
     story.append(Paragraph("<b>Weekly Test</b>", title_style))
     story.append(Paragraph(f"<b>{clean_book_title} - Patterns: {p_nums}</b>", title_style))
     
-    # [수정됨] 이름/날짜/학년 표시 로직
-    # 이름이 입력되면 그 이름을 넣고, 아니면 밑줄을 넣음
+    # 이름과 날짜 처리
     display_name = f"NAME: {student_name}" if student_name else "NAME: _______________________________"
+    # [수정됨] 날짜가 있으면 출력, 없으면 빈칸
+    display_date = f"DATE: {student_date}" if student_date else "DATE: _____ / _____"
     
     name_date_data = [[
-        Paragraph(display_name, ParagraphStyle('Name', fontSize=12, fontName=KOREAN_FONT)), # 한글 이름 지원을 위해 폰트 변경
-        Paragraph("DATE: _____ / _____", ParagraphStyle('Date', fontSize=12, fontName='Helvetica', alignment=TA_RIGHT))
+        Paragraph(display_name, ParagraphStyle('Name', fontSize=12, fontName=KOREAN_FONT)), 
+        Paragraph(display_date, ParagraphStyle('Date', fontSize=12, fontName=KOREAN_FONT, alignment=TA_RIGHT)) # 한글 날짜 지원
     ]]
     name_date_table = Table(name_date_data, colWidths=[120*mm, 50*mm])
     name_date_table.setStyle(TableStyle([
@@ -180,13 +181,12 @@ def create_worksheet(pattern_data, selected_patterns, output_path, book_title, s
         story.append(Paragraph("_" * 85, line_style))
         story.append(Spacer(1, 3*mm))
     
-    # Footer [수정됨] 학년(GRADE) 표시
+    # Footer
     story.append(Spacer(1, 5*mm))
     
-    display_grade = f"<b>GRADE: {student_grade}</b>" if student_grade else "<b>GRADE:</b>"
-    
+    # [수정됨] GRADE는 다시 빈칸으로 복구
     footer_data = [[
-        Paragraph(display_grade, ParagraphStyle('Footer', fontSize=12, fontName=KOREAN_FONT)), # 한글 학년 지원
+        Paragraph("<b>GRADE:</b>", ParagraphStyle('Footer', fontSize=12, fontName='Helvetica-Bold')),
         "",
         Paragraph("<b>REMARK:</b>", ParagraphStyle('Footer', fontSize=12, fontName='Helvetica-Bold'))
     ]]
@@ -249,9 +249,9 @@ def generate():
         book_filename = data.get('book')
         selected_nums = data.get('patterns', [])
         
-        # [수정됨] 클라이언트에서 보낸 이름과 학년 받기
+        # [수정됨] grade -> date 받기
         student_name = data.get('name', '')
-        student_grade = data.get('grade', '')
+        student_date = data.get('date', '')
         
         if not book_filename or not selected_nums:
             return jsonify({'error': 'Book or Patterns missing'}), 400
@@ -267,8 +267,8 @@ def generate():
         filename = f"Worksheet_{datetime.now().strftime('%m%d_%H%M%S')}.pdf"
         output_path = os.path.join(OUTPUT_FOLDER, filename)
         
-        # [수정됨] PDF 생성 함수에 이름/학년 전달
-        create_worksheet(final_questions, selected_data, output_path, book_filename, student_name, student_grade)
+        # [수정됨] create_worksheet 인자 변경
+        create_worksheet(final_questions, selected_data, output_path, book_filename, student_name, student_date)
         
         return send_file(output_path, as_attachment=True)
     except Exception as e:
